@@ -50,7 +50,24 @@ This repository will later include:
 
 Stay tuned.
 
+## Collection
+
+This repository also provides a CrowdSec collection for pfSense SSH parsing. 
+The collection `kaijo/pfsense-ssh` includes: - the SSH parser `kaijo/sshd-logs-pfsense` 
+This allows pfSense users to install the parser in a single step.
+
+## Install the collection
+
+If you cloned or downloaded this repository:
+cscli collections install ./collections/kaijo-pfsense-ssh.yaml
+
+Install from GitHub (future CrowdSec Hub submission)
+Once published in the CrowdSec Hub, installation will be as simple as:
+cscli collections install kaijo/pfsense-ssh
+
 ## Author
 
 **kaijo**  
 GitHub: https://github.com/kaijo-hub
+
+
