@@ -1,0 +1,5 @@
+type: parser
+name: kaijo/sshd-logs-pfsense
+description: "pfSense/FreeBSD SSH parser with full coverage for pfSense 24.x/25.x"
+version: 1.0.0
+author: "kaijo"
