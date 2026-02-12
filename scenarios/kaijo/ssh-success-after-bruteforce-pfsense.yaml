@@ -1,20 +1,12 @@
 type: leaky
 name: kaijo/ssh-success-after-bruteforce-pfsense
-description: "Detect successful SSH login following multiple authentication failures"
-author: kaijo
-
+description: Detect successful login after bruteforce attempts on pfSense
 filter: |
-  evt.Meta.source_ip != '' && evt.Meta.log_type in ['ssh_auth_fail', 'ssh_permission_denied', 'ssh_pam_error', 'ssh_auth_success']
-
+  evt.Meta.service == "ssh" && evt.Meta.log_type == "ssh_success"
+leakspeed: 1h
+capacity: 1
 groupby: evt.Meta.source_ip
-
-capacity: 5
-leakspeed: 10m
-
-# A successful login will overflow the bucket if enough failures happened before
 blackhole: 0s
-
 labels:
-  type: intrusion
   service: ssh
-  remediation: true
+  type: bruteforce

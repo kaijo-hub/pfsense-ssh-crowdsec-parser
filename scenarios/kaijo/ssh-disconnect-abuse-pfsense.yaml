@@ -1,14 +1,12 @@
 type: leaky
 name: kaijo/ssh-disconnect-abuse-pfsense
-description: "Detect repeated SSH disconnects with non-zero reason codes"
-author: kaijo
+description: Detect SSH disconnect abuse on pfSense
 filter: |
-  evt.Meta.log_type == 'ssh_disconnect' && evt.Meta.reason_code != '0' && evt.Meta.source_ip != ''
-groupby: evt.Meta.source_ip
+  evt.Meta.service == "ssh" && evt.Meta.log_type == "ssh_disconnect"
 leakspeed: 10s
-capacity: 10
+capacity: 5
+groupby: evt.Meta.source_ip
 blackhole: 2m
 labels:
-  type: recon
   service: ssh
-  remediation: false
+  type: abuse

@@ -1,14 +1,12 @@
 type: leaky
 name: kaijo/ssh-bruteforce-fast-pfsense
-description: "Detect fast SSH bruteforce attacks based on repeated authentication failures"
-author: kaijo
+description: Detect fast SSH bruteforce on pfSense
 filter: |
-  evt.Meta.log_type in ['ssh_auth_fail', 'ssh_permission_denied', 'ssh_pam_error'] && evt.Meta.source_ip != ''
-groupby: evt.Meta.source_ip
+  evt.Meta.service == "ssh" && (evt.Meta.log_type == "ssh_pam_auth_error" || evt.Meta.log_type == "ssh_permission_denied")
 leakspeed: 10s
 capacity: 5
-blackhole: 2m
+groupby: evt.Meta.source_ip
+blackhole: 1m
 labels:
-  type: bruteforce
   service: ssh
-  remediation: true
+  type: bruteforce
