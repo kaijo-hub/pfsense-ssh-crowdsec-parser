@@ -3,13 +3,13 @@
 **Version:** 0.1.3  
 **Author:** kaijo
 
-A pfSenseâ€‘optimized CrowdSec parser and scenario collection providing full SSH log coverage and security detection for FreeBSD/pfSense systems.
+A pfSense optimized CrowdSec parser and scenario collection providing full SSH log coverage and security detection for FreeBSD/pfSense systems.
 
 This project is designed specifically for pfSense 24.x and 25.x, which use FreeBSD OpenSSH logging.  
 It includes:
 
 - A complete pfSense SSH parser  
-- Six pfSenseâ€‘specific SSH security scenarios  
+- Six pfSense specific SSH security scenarios  
 - A CrowdSec collection bundling parser + scenarios  
 - Full compatibility with CrowdSec 1.5 (FreeBSD build)
 
@@ -54,7 +54,7 @@ This ensures **complete pfSense SSH coverage**.
 
 All scenarios use **leaky buckets**, fully compatible with pfSenseâFreeBSD CrowdSec build.
 
-### â Collection: `kaijo/pfsense-ssh`
+### a Collection: `kaijo/pfsense-ssh`
 
 This collection bundles:
 
@@ -74,10 +74,10 @@ This collection bundles:
 - Fully tested against real pfSense logs
 
 ### Scenarios
-- Added six pfSenseâ€‘optimized SSH scenarios  
+- Added six pfSense optimized SSH scenarios  
 - All scenarios validated with `crowdsec -t`  
-- FreeBSDâcompatible leaky bucket logic  
-- pfSenseâspecific naming (`kaijo/...-pfsense`)
+- FreeBSD compatible leaky bucket logic  
+- pfSense specific naming (`kaijo/...-pfsense`)
 
 ### Collection
 - Added `kaijo/pfsense-ssh` collection  
