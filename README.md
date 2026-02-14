@@ -123,15 +123,15 @@ Therefore, this collection must be installed locally.
   mkdir -p /usr/local/etc/crowdsec/parsers/s01-parse/custom 
   cp parsers/s01-parse/kaijo/sshd-logs-pfsense.yaml /usr/local/etc/crowdsec/parsers/s01-parse/custom
   
-- Install the scenarios
+- Install the scenarios:
   mkdir -p /usr/local/etc/crowdsec/scenarios/custom
   cp scenarios/kaijo/*.yaml /usr/local/etc/crowdsec/scenarios/custom
 
-- Install the collection file
+- Install the collection file:
   mkdir -p /usr/local/etc/crowdsec/collections/custom
   cp collections/kaijo/pfsense-ssh.yaml /usr/local/etc/crowdsec/collections/custom
 
-- Restart CrowdSec
+- Restart CrowdSec:
   service crowdsec.sh restart
  
 
