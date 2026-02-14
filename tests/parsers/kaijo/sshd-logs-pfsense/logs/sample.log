@@ -1,0 +1,7 @@
+Feb 12 20:00:00 routeme sshd[12345]: error: PAM: Authentication error for admin from 1.2.3.4
+Feb 12 20:00:01 routeme sshd[12346]: error: PAM: Authentication error for illegal user test from 5.6.7.8
+Feb 12 20:00:02 routeme sshd[12347]: Failed password for admin from 9.9.9.9 port 54321 ssh2
+Feb 12 20:00:03 routeme sshd[12348]: Accepted password for admin from 1.2.3.4 port 22 ssh2
+Feb 12 20:00:04 routeme sshd[12349]: Connection closed by authenticating user admin 1.2.3.4 port 22 [preauth]
+Feb 12 20:00:05 routeme sshd[12350]: Received disconnect from 5.6.7.8 port 54321:11: disconnected by user
+

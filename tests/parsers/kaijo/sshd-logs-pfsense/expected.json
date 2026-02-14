@@ -1,0 +1,53 @@
+{
+  "events": [
+    {
+      "line": 1,
+      "Meta": {
+        "service": "ssh",
+        "log_type": "ssh_pam_auth_error",
+        "source_ip": "1.2.3.4"
+      }
+    },
+    {
+      "line": 2,
+      "Meta": {
+        "service": "ssh",
+        "log_type": "ssh_pam_auth_error",
+        "source_ip": "5.6.7.8"
+      }
+    },
+    {
+      "line": 3,
+      "Meta": {
+        "service": "ssh",
+        "log_type": "ssh_permission_denied",
+        "source_ip": "9.9.9.9"
+      }
+    },
+    {
+      "line": 4,
+      "Meta": {
+        "service": "ssh",
+        "log_type": "ssh_success",
+        "source_ip": "1.2.3.4"
+      }
+    },
+    {
+      "line": 5,
+      "Meta": {
+        "service": "ssh",
+        "log_type": "ssh_closed",
+        "source_ip": "1.2.3.4"
+      }
+    },
+    {
+      "line": 6,
+      "Meta": {
+        "service": "ssh",
+        "log_type": "ssh_disconnect",
+        "source_ip": "5.6.7.8"
+      }
+    }
+  ]
+}
+

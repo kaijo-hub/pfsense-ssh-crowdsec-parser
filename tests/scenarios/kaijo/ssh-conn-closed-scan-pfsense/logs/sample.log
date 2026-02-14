@@ -1,0 +1,6 @@
+Feb 12 20:00:00 routeme sshd[12345]: Connection closed by 10.0.0.6 port 22 [preauth]
+Feb 12 20:00:03 routeme sshd[12345]: Connection closed by 10.0.0.6 port 22 [preauth]
+Feb 12 20:00:06 routeme sshd[12345]: Connection closed by 10.0.0.6 port 22 [preauth]
+Feb 12 20:00:09 routeme sshd[12345]: Connection closed by 10.0.0.6 port 22 [preauth]
+Feb 12 20:00:12 routeme sshd[12345]: Connection closed by 10.0.0.6 port 22 [preauth]
+

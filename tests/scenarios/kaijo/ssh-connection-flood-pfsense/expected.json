@@ -1,0 +1,13 @@
+{
+  "alerts": [
+    {
+      "scenario": "kaijo/ssh-connection-flood-pfsense",
+      "source_ip": "10.0.0.4",
+      "labels": {
+        "service": "ssh",
+        "type": "scan"
+      }
+    }
+  ]
+}
+

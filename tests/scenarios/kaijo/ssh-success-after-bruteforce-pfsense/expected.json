@@ -1,0 +1,14 @@
+{
+  "alerts": [
+    {
+      "scenario": "kaijo/ssh-success-after-bruteforce-pfsense",
+      "source_ip": "10.0.0.3",
+      "events_count": 1,
+      "labels": {
+        "service": "ssh",
+        "type": "bruteforce"
+      }
+    }
+  ]
+}
+

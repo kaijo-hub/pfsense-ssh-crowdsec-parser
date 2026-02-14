@@ -1,0 +1,14 @@
+{
+  "alerts": [
+    {
+      "scenario": "kaijo/ssh-bruteforce-slow-pfsense",
+      "source_ip": "10.0.0.2",
+      "events_count": 10,
+      "labels": {
+        "service": "ssh",
+        "type": "bruteforce"
+      }
+    }
+  ]
+}
+
