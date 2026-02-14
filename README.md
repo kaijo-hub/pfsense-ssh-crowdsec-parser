@@ -116,8 +116,7 @@ cscli collections install kaijo/pfsense-ssh
 
 ### Manual installation (development/testing)
 
-cscli parsers install ./parsers/s01-parse/kaijo/sshd-logs-pfsense.yaml
-cscli collections install ./collections/kaijo-pfsense-ssh.yaml
+cscli collections install github.com/kaijo-hub/kaijo-pfsense-collection:kaijo/pfsense-ssh
 
 ---
 
