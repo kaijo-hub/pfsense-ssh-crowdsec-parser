@@ -110,14 +110,27 @@ These tests validate:
 
 ## Installation
 
-### Once published in the CrowdSec Hub
+### local installation
 
-cscli collections install kaijo/pfsense-ssh
+CrowdSec on pfSense/FreeBSD does not support installing collections directly from GitHub repositories. 
+Therefore, this collection must be installed locally.
 
-### Manual installation (development/testing)
+- clone the repository:
+  git clone https://github.com/kaijo-hub/kaijo-pfsense-collection.git
+  cd kaijo-pfsense-collection
 
-cscli collections install github.com/kaijo-hub/kaijo-pfsense-collection:kaijo/pfsense-ssh
+- Install the parser:
+  cp parsers/s01-parse/kaijo/sshd-logs-pfsense.yaml /usr/local/etc/crowdsec/parsers/s01-parse/
+  
+- Install the scenarios
+  cp scenarios/kaijo/*.yaml /usr/local/etc/crowdsec/scenarios/
 
+- Install the collection file
+  cp collections/kaijo/pfsense-ssh.yaml /usr/local/etc/crowdsec/collections/
+
+- Restart CrowdSec
+  service crowdsec.sh restart
+ 
 ---
 
 ## Example pfSense SSH Logs
