@@ -1,173 +1,202 @@
-# kaijo/pfsense-ssh - pfSense SSH Collection for CrowdSec
+# pfSense CrowdSec Collection Suite
 
-This collection provides full SSH log parsing and attack detection for **pfSense 24.x / 25.x** systems.  
-pfSense uses a FreeBSD-specific OpenSSH logging format that differs significantly from Linux, causing the default CrowdSec SSH parser to miss or misclassify events.
+This suite provides a complete and reliable detection pipeline for SSH authentication events on pfSense systems. It includes two pfSense-specific SSH parsers (RFC 3164 and RFC 5424) and eight SSH security scenarios. The suite is compatible with both pfSense CE and pfSense Plus and is designed to deliver precise, noise-resistant detection for the FreeBSD/OpenSSH environment used by pfSense.
 
-This collection adds:
-
-- A pfSense-optimized SSH parser  
-- Six pfSense specific SSH scenarios  
-- A complete Hub test suite  
-- Full support for pfSense/FreeBSD OpenSSH logs  
-- Accurate detection of bruteforce, slow bruteforce, connection floods, disconnect abuse, and post-bruteforce success
+The suite has been validated through an extensive multi-stage hubtest process covering RFC 3164, RFC 5424, and mixed-format log streams.
 
 ---
 
-## Why this collection is needed
+## Overview
 
-pfSense uses a FreeBSD-patched OpenSSH implementation that produces log lines such as:
-
-- error: PAM: Authentication error for admin from 1.2.3.4
-- Connection closed by authenticating user admin 1.2.3.4 port 22 [preauth]
-- Received disconnect from 5.6.7.8 port 54321:11: disconnected by user
-
-These formats:  
-
-- do **not** match Linux OpenSSH logs   
-- are **not** parsed by the default CrowdSec SSH parser   
-- cause SSH scenarios to never trigger on pfSense systems   
-
-This collection provides **full coverage** for all pfSense SSH log variants.
-
----
-
-## Supported Log Types
-
-The parser recognizes and normalizes all relevant pfSense SSH log formats:
-
-- Accepted login  
-- PAM authentication error  
-- Permission denied  
-- Timeout before authentication  
-- Connection closed  
-- Disconnect (with reason and reason_code)  
-
-
-This ensures **complete pfSense SSH coverage**.
-
----
-
-## Features
-
-### pfSense-specific SSH parser
-
-- `kaijo/sshd-logs-pfsense` 
-  Parses all pfSense/FreeBSD SSH log formats and normalizes them into CrowdSec compatible `log_type` values.
-
-Key characteristics:
-
-- Covers all pfSense/FreeBSD SSH log formats  
-- Works with both `sshd` and `sshd-session`  
-- Produces clean CrowdSec metadata (`evt.Meta.*`)  
-- IPv4 and IPv6 support  
-- No external dependencies  
-- Fully tested against real pfSense logs  
-
-###  Included SSH security scenarios
-
-| Scenario | Purpose |
-|---------|---------|
-| `ssh-bruteforce-fast-pfsense` | Detects fast SSH bruteforce attacks |
-| `ssh-bruteforce-slow-pfsense` | Detects slow, stealthy bruteforce attacks |
-| `ssh-success-after-bruteforce-pfsense` | Detects successful login after multiple failures |
-| `ssh-connection-flood-pfsense` | Detects excessive SSH connection attempts |
-| `ssh-disconnect-abuse-pfsense` | Detects repeated disconnects with non-zero reason codes |
-| `ssh-conn-closed-scan-pfsense` | Detects repeated connection-closed events (recon) |
-
-All scenarios use **leaky buckets**, fully compatible with pfSense FreeBSD/CrowdSec build
-Each scenario is tuned specifically for pfSense SSH behavior.
-
----
-
-## Collection: `kaijo/pfsense-ssh`
- 
-This collection bundles:
-
-- The pfSense SSH parser
-- All six SSH scenarios
-- Tags for pfSense, SSH, FreeBSD, security
-
----
-
-## Hub Test Suite
-
-This collection includes a complete Hub compatible test suite:
-
-tests/parsers/kaijo/sshd-logs-pfsense/logs/sample.log
-tests/parsers/kaijo/sshd-logs-pfsense/expected.json
-
-tests/scenarios/kaijo/<scenario-name>/logs/sample.log
-tests/scenarios/kaijo/<scenario-name>/expected.json
-
-These tests validate:
-
-- parser correctness
-- scenario triggering
-- alert generation
-- pfSense-specific log coverage
+- Full compatibility with:
+  - pfSense CE 2.8.1 (FreeBSD 15, process name "sshd")
+  - pfSense Plus 25.11.x (FreeBSD 16, process name "sshd-session")
+- Two pfSense-specific SSH parsers:
+  - sshd-logs-rfc3164
+  - sshd-logs-rfc5424
+- Eight pfSense-specific SSH detection scenarios
+- Support for IPv4 and IPv6
+- Normalized metadata (log_type, source_ip, target_user, service)
+- Compatible with CrowdSec enrichers (GeoIP, Dateparse, etc.)
+- Designed specifically for pfSense FreeBSD/OpenSSH message variants
 
 ---
 
 ## Installation
 
-### local pfSense installation
+### Part 1 - Installing CrowdSec on pfSense
 
-CrowdSec on pfSense/FreeBSD does not support installing collections directly from GitHub repositories. 
-Therefore, this collection must be installed locally.
+CrowdSec for pfSense is distributed as a pfSense package:
 
-- clone the repository:
-  git clone https://github.com/kaijo-hub/kaijo-pfsense-collection.git
-  cd kaijo-pfsense-collection
+https://github.com/crowdsecurity/pfSense-pkg-crowdsec/releases
 
-- Install the parser:
-  mkdir -p /usr/local/etc/crowdsec/parsers/s01-parse/custom 
-  cp parsers/s01-parse/kaijo/sshd-logs-pfsense.yaml /usr/local/etc/crowdsec/parsers/s01-parse/custom
-  
-- Install the scenarios:
-  mkdir -p /usr/local/etc/crowdsec/scenarios/custom
-  cp scenarios/kaijo/*.yaml /usr/local/etc/crowdsec/scenarios/custom
+#### pfSense CE 2.8.1 (FreeBSD 15)
 
-- Install the collection file:
-  mkdir -p /usr/local/etc/crowdsec/collections/custom
-  cp collections/kaijo/pfsense-ssh.yaml /usr/local/etc/crowdsec/collections/custom
+- Fully supported
+- No workarounds required
+- SSH logs use the process name "sshd"
+- Both RFC 3164 and RFC 5424 formats are supported by this suite
 
-- Restart CrowdSec:
-  service crowdsec.sh restart
- 
+#### pfSense Plus 25.11.x (FreeBSD 16 kernel)
 
-### verify installation
+pfSense Plus 25.11.x is based on FreeBSD 16, which is not yet officially supported by CrowdSec.
 
-- Check the parser:
-  cscli parsers list | grep kaijo/sshd-
+To install CrowdSec on pfSense Plus 25.11.x:
 
-- Check the scenarios:
-  cscli scenarios list | grep kaijo/ssh-
+1. Install using the FreeBSD 15 compatibility flag:
+   sh install-crowdsec.sh --freebsd 15
 
-- Check the metrics:
-  cscli metrics | grep kaijo/sshd-
+2. Apply the temporary workaround described here:
+   https://github.com/crowdsecurity/pfSense-pkg-crowdsec/issues/121
+
+After installation, restart CrowdSec on pfSense:
+
+service crowdsec.sh restart
 
 ---
 
-## Example pfSense SSH Logs
-- Accepted keyboard-interactive/pam for admin from 192.168.1.10 port 54321 ssh2
-- error: PAM: Authentication error for root from 192.168.1.10
-- process_output: ssh_packet_write_poll: Connection from user admin 192.168.1.10 port 54321: Permission denied
-- Timeout before authentication for connection from 192.168.1.10 to 192.168.1.1, pid = 12345
-- Connection closed by 192.168.1.10 port 54321
-- Received disconnect from 192.168.1.10 port 54321:11: Normal Shutdown
+### Part 2 - Installing this CrowdSec Collection Suite
+
+From the CrowdSec Hub (recommended once published):
+
+cscli collections install kaijo/pfsense-crowdsec-collection-suite
+
+From a local repository clone:
+
+git clone https://github.com/kaijo-hub/pfsense-crowdsec-collection-suite
+cscli collections install ./pfsense-crowdsec-collection-suite
+
+Restart CrowdSec afterwards:
+
+service crowdsec.sh restart
+
+---
+
+## Parser Architecture
+
+pfSense can emit SSH logs in three formats:
+
+- RFC 3164 only
+- RFC 5424 only
+- Mixed (common when local and remote syslog are combined)
+
+Additionally, pfSense CE and pfSense Plus use different process names:
+
+- pfSense CE: "sshd"
+- pfSense Plus: "sshd-session"
+
+To ensure full compatibility, this suite provides two dedicated parsers:
+
+### sshd-logs-rfc3164
+
+- Parses pfSense BSD-style SSH logs
+- Supports both "sshd" (CE) and "sshd-session" (Plus)
+- Covers all relevant FreeBSD/OpenSSH SSH message variants
+
+### sshd-logs-rfc5424
+
+- Parses pfSense structured syslog SSH logs (RFC 5424)
+- Supports both "sshd" (CE) and "sshd-session" (Plus)
+- Required when pfSense sends logs to remote syslog servers in RFC 5424 format
+
+### Mixed-format compatibility
+
+Both parsers operate correctly when pfSense emits both formats simultaneously, validated through mixed-format hubtests.
+
+---
+
+## Supported SSH Event Types
+
+Both parsers recognize and classify:
+
+- ssh_success - Successful authentication
+- ssh_pam_auth_error - PAM authentication failures
+- ssh_permission_denied - Permission denied for valid users
+- ssh_invalid_user - Attempts with non-existent users
+- ssh_closed - Normal connection closure
+- ssh_timeout_before_auth - Timeouts before authentication
+- ssh_disconnect - Disconnects during or after authentication
+- ssh_connection_flood - High-frequency connection attempts
+- ssh_conn_closed_scan - Connection-closed enumeration patterns
+
+---
+
+## Scenarios
+
+The suite includes eight pfSense-specific SSH scenarios, each available in:
+
+- RFC 3164 variant
+- RFC 5424 variant
+- Mixed-format variant
+
+These scenarios detect:
+
+- Fast brute-force attacks
+- Slow brute-force attacks
+- Invalid-user scans
+- Connection-closed enumeration
+- Connection floods
+- Disconnect abuse
+- Timeout-before-auth abuse
+- Successful login after brute-force attempts
+
+All scenarios rely on the normalized log_type values produced by the parsers.
+
+---
+
+## Test Coverage (Hubtest)
+
+This suite has undergone a three-stage hubtest validation:
+
+1. RFC 3164 test suite  
+   All pfSense SSH scenarios and both parsers tested against pure RFC 3164 logs.
+
+2. RFC 5424 test suite  
+   All scenarios and both parsers tested against pure RFC 5424 logs.
+
+3. Mixed-format test suite  
+   All scenarios and both parsers tested against logs containing interleaved RFC 3164 and RFC 5424 entries.
+
+### Test assets included
+
+For each scenario and format:
+
+- config.yaml
+- parser.assert
+- scenario.assert
+- Realistic pfSense SSH log files (*.log)
+
+Across all test suites:
+
+- Thousands of assertions
+- Zero mismatches
+- Deterministic enrichment
+- Full compatibility across CE, Plus, and all log formats
+
+---
+
+## Limitations
+
+- Only pfSense native FreeBSD/OpenSSH SSH messages are supported
+- RFC 5424 structured data elements are not parsed
+- Custom syslog pipelines that modify log format are not supported
+- External SSH daemons or modified FreeBSD builds are out of scope
 
 ---
 
 ## Future Extensions
 
-This repository will later include:
+This suite will later include:
+
 - pfSense OpenVPN parser
 - pfSense OpenVPN security scenarios
 
 ---
 
-## Author: kaijo  
+## Author
 
-## GitHub: https://github.com/kaijo-hub
+Author: Johann (kaijo)  
+GitHub: https://github.com/kaijo-hub
+
 
 
