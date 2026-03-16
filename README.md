@@ -1,8 +1,8 @@
 # pfSense CrowdSec Collection Suite
 
-This suite provides a complete and reliable detection pipeline for SSH authentication events on pfSense systems. It includes two pfSense-specific SSH parsers (RFC 3164 and RFC 5424) and eight SSH security scenarios. The suite is compatible with both pfSense CE and pfSense Plus and is designed to deliver precise, noise-resistant detection for the FreeBSD/OpenSSH environment used by pfSense.
+This suite provides a complete and reliable detection pipeline for SSH authentication events on pfSense systems. It includes two pfSense-specific SSH parsers (RFC3164 Logformat and RFC5424 Logformat) and eight SSH security scenarios. The suite is compatible with both pfSense CE and pfSense Plus and is designed to deliver precise, noise-resistant detection for the FreeBSD/OpenSSH environment used by pfSense.
 
-The suite has been validated through an extensive multi-stage hubtest process covering RFC 3164, RFC 5424, and mixed-format log streams.
+The suite has been validated through an extensive multi-stage hubtest process covering RFC3164 Logformat, RFC5424 Logformat, and temporary Mixed Logformat transitions.
 
 ---
 
@@ -24,22 +24,38 @@ The suite has been validated through an extensive multi-stage hubtest process co
 
 ## Installation
 
-### Part 1 - Installing CrowdSec on pfSense
+### Part 1 – Installing CrowdSec on pfSense
 
-CrowdSec for pfSense is distributed as a pfSense package:
+CrowdSec is **not included in the official pfSense package repository**.  
+Unlike OPNsense, which provides a fully integrated CrowdSec package, pfSense currently requires a **manual installation** using the CrowdSec pfSense package available on GitHub:
 
 https://github.com/crowdsecurity/pfSense-pkg-crowdsec/releases
 
-#### pfSense CE 2.8.1 (FreeBSD 15)
+The installation process differs slightly between pfSense CE and pfSense Plus.
+
+---
+
+### pfSense CE 2.8.1 (FreeBSD 15)
 
 - Fully supported
 - No workarounds required
 - SSH logs use the process name "sshd"
-- Both RFC 3164 and RFC 5424 formats are supported by this suite
+- Both RFC3164 Logformat and RFC5424 Logformat are supported by this suite
 
-#### pfSense Plus 25.11.x (FreeBSD 16 kernel)
+Installation:
 
-pfSense Plus 25.11.x is based on FreeBSD 16, which is not yet officially supported by CrowdSec.
+1. Download the latest pfSense CrowdSec package from GitHub.
+2. Install via the pfSense package manager (manual upload).
+3. Restart CrowdSec:
+
+service crowdsec.sh restart
+
+---
+
+### pfSense Plus 25.11.x (FreeBSD 16 kernel)
+
+pfSense Plus 25.11.x is based on FreeBSD 16, which is **not yet officially supported by CrowdSec**.  
+The pfSense CrowdSec package from GitHub can still be installed, but requires a compatibility flag and a temporary workaround.
 
 To install CrowdSec on pfSense Plus 25.11.x:
 
@@ -49,13 +65,13 @@ To install CrowdSec on pfSense Plus 25.11.x:
 2. Apply the temporary workaround described here:
    https://github.com/crowdsecurity/pfSense-pkg-crowdsec/issues/121
 
-After installation, restart CrowdSec on pfSense:
+3. Restart CrowdSec:
 
 service crowdsec.sh restart
 
 ---
 
-### Part 2 - Installing this CrowdSec Collection Suite
+## Installing this CrowdSec Collection Suite
 
 From the CrowdSec Hub (recommended once published):
 
@@ -74,34 +90,31 @@ service crowdsec.sh restart
 
 ## Parser Architecture
 
-pfSense can emit SSH logs in three formats:
+pfSense can emit SSH logs in two primary formats:
 
-- RFC 3164 only
-- RFC 5424 only
-- Mixed (common when local and remote syslog are combined)
+- RFC3164 Logformat
+- RFC5424 Logformat
 
-Additionally, pfSense CE and pfSense Plus use different process names:
+In addition, a Mixed Logformat may appear **temporarily** during a log format transition.  
+This occurs when the administrator switches pfSense from RFC3164 Logformat to RFC5424 Logformat (or vice versa). During this changeover period, both formats may appear in the log stream until all services have fully switched to the new format.
 
-- pfSense CE: "sshd"
-- pfSense Plus: "sshd-session"
-
-To ensure full compatibility, this suite provides two dedicated parsers:
+To ensure full compatibility with pfSense CE and pfSense Plus, this suite provides two dedicated parsers:
 
 ### sshd-logs-rfc3164
 
-- Parses pfSense BSD-style SSH logs
+- Parses pfSense SSH logs in RFC3164 Logformat
 - Supports both "sshd" (CE) and "sshd-session" (Plus)
 - Covers all relevant FreeBSD/OpenSSH SSH message variants
 
 ### sshd-logs-rfc5424
 
-- Parses pfSense structured syslog SSH logs (RFC 5424)
+- Parses pfSense SSH logs in RFC5424 Logformat
 - Supports both "sshd" (CE) and "sshd-session" (Plus)
-- Required when pfSense sends logs to remote syslog servers in RFC 5424 format
+- Required when pfSense sends logs to remote syslog servers in RFC5424 Logformat
 
-### Mixed-format compatibility
+### Mixed Logformat compatibility
 
-Both parsers operate correctly when pfSense emits both formats simultaneously, validated through mixed-format hubtests.
+Both parsers operate correctly even when pfSense temporarily emits a Mixed Logformat during transitions.
 
 ---
 
@@ -125,9 +138,9 @@ Both parsers recognize and classify:
 
 The suite includes eight pfSense-specific SSH scenarios, each available in:
 
-- RFC 3164 variant
-- RFC 5424 variant
-- Mixed-format variant
+- RFC3164 Logformat variant
+- RFC5424 Logformat variant
+- Mixed Logformat variant
 
 These scenarios detect:
 
@@ -148,14 +161,14 @@ All scenarios rely on the normalized log_type values produced by the parsers.
 
 This suite has undergone a three-stage hubtest validation:
 
-1. RFC 3164 test suite  
-   All pfSense SSH scenarios and both parsers tested against pure RFC 3164 logs.
+1. RFC3164 Logformat test suite  
+   All pfSense SSH scenarios and both parsers tested against pure RFC3164 Logformat logs.
 
-2. RFC 5424 test suite  
-   All scenarios and both parsers tested against pure RFC 5424 logs.
+2. RFC5424 Logformat test suite  
+   All scenarios and both parsers tested against pure RFC5424 Logformat logs.
 
-3. Mixed-format test suite  
-   All scenarios and both parsers tested against logs containing interleaved RFC 3164 and RFC 5424 entries.
+3. Mixed Logformat test suite  
+   All scenarios and both parsers tested against logs containing interleaved RFC3164 and RFC5424 Logformat entries.
 
 ### Test assets included
 
@@ -178,7 +191,7 @@ Across all test suites:
 ## Limitations
 
 - Only pfSense native FreeBSD/OpenSSH SSH messages are supported
-- RFC 5424 structured data elements are not parsed
+- RFC5424 structured data elements are not parsed
 - Custom syslog pipelines that modify log format are not supported
 - External SSH daemons or modified FreeBSD builds are out of scope
 
@@ -197,6 +210,3 @@ This suite will later include:
 
 Author: Johann (kaijo)  
 GitHub: https://github.com/kaijo-hub
-
-
-
