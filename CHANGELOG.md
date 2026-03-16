@@ -1,7 +1,7 @@
 # Changelog
 
-0.1.6 — 2026-03-16
-Improved
+## 0.1.6 — 2026-03-16
+### Improved
 - Updated README with precise terminology: consistently using “RFC3164 Logformat” and “RFC5424 Logformat”.
 - Reworked parser architecture section to correctly describe Mixed Logformat as a temporary state during log format transitions.
 - Clarified installation instructions for pfSense CE and pfSense Plus.
@@ -9,11 +9,10 @@ Improved
 - Highlighted the difference to OPNsense, which offers full native CrowdSec integration.
 - Improved documentation clarity and accuracy across multiple sections.
 
-Fixed
+### Fixed
 - Removed misleading wording implying official pfSense package availability.
 - Corrected and refined descriptions related to pfSense log handling and installation workflow.
-
-No functional changes to parsers or scenarios.
+- No functional changes to parsers or scenarios.
 
 ---
 
